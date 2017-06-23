@@ -23,35 +23,46 @@ const getCurrentlyPlayingMovies = () => {
         });
 };
 
-function printTopTenMovies(movies) {
-    movies.results
+const getTopTenMovies = allMoviesCurrentlyPlaying =>
+    allMoviesCurrentlyPlaying.results
         .sort((movie1, movie2) => movie2.vote_average - movie1.vote_average)
-        .slice(0, 10)
-        .forEach(movie => {
-            console.log(`
-Title: ${movie.title}
-Average rating: ${movie.vote_average}
+        .slice(0, 10);
+
+const printThreeMainActors = allActors => allActors.slice(0, 3)
+    .forEach((actor, j) =>
+        console.log(`
+${j + 1}. ${actor.name}`
+        )
+    );
+
+const printMovieDetails = (movie, i) => {
+    console.log(chalk.red(`
+${i + 1}.`));    
+    console.log(`
+Movie name: ${movie.title}         
+Vote average: ${movie.vote_average}
 Overview:
-${movie.overview}`);
-        });    
-}
+${movie.overview}
 
-function printMainThreeActors(actors) {
-    actors.cast
-        .slice(0, 3)
-        .forEach(actor => {
-            console.log(chalk.bold(`
-Character: ${actor.character}
-Actor Name: ${actor.name}`));
-        });
-}
-
-function printTopTenMoviesAndMainThreeActors(movies) {
-    printTopTenMovies(movies);
-    
-    movies.results.forEach(movie => getActorsForMovie(movie.id).then(printMainThreeActors));
-}
+Top three actors:`);
+};
 
 getCurrentlyPlayingMovies()
-    .then(printTopTenMoviesAndMainThreeActors);
-    
+    .then(moviesCurrentlyPlaying => {
+        const topTenMovies = getTopTenMovies(moviesCurrentlyPlaying);
+        const getActorsForCurrentlyPlayingMovies = topTenMovies
+            .map(function (movie) {
+                return getActorsForMovie(movie.id);
+            });
+
+        return Promise.all(getActorsForCurrentlyPlayingMovies)
+            .then(actorsForAllCurrentlyPlayingMovies => {
+                for (let i = 0; i < actorsForAllCurrentlyPlayingMovies.length; i++) {
+                    printMovieDetails(topTenMovies[i], i);
+                    printThreeMainActors(actorsForAllCurrentlyPlayingMovies[i].cast);
+                }
+            }).catch(console.log.bind(console));
+    });
+
+
+
