@@ -1,0 +1,23 @@
+<% layout('layout') -%>
+<div class="title">  
+    <%= title %>
+    <ul class="topTenMovies">
+    <% topTenMovies.forEach(function(movie){ %>
+      <li>
+        <br>    
+        <b>Title:</b> <%- movie.title %> <br>        
+        <b>Overview:</b> <%- movie.overview %> <br>
+        <b>Vote average:</b> <%- movie.vote_average %> <br>
+        <b>Main three actors:</b> 
+        <ol>
+          <% movie.mainThreeActors.forEach(function(actorName){ %>
+            <li>
+              <%- actorName %>
+            </li>
+          <% }); %>
+        </ol>
+           
+      </li>
+    <% }); %>
+    </ul>
+</div>  
